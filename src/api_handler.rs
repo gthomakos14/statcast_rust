@@ -87,3 +87,38 @@ pub async fn get_box_data(game_pk: &str) -> DataFrame{
 
     df
 }
+
+
+pub async fn get_play_data(game_pk: &str){
+    let url = format!("https://statsapi.mlb.com/api/v1/game/{game_pk}/playByPlay");
+    let response = query_url(url).await;
+
+    let all_plays = response.get("allPlays")
+        .unwrap()
+        .as_array()
+        .unwrap();
+    for play in all_plays{
+        let event_type = play.get("result")
+            .unwrap()
+            .get("eventType")
+            .unwrap()
+            .as_str()
+            .unwrap();
+        let matchup = play.get("matchup").unwrap();
+        let bat_side = matchup.get("batSide")
+            .unwrap()
+            .get("code")
+            .unwrap()
+            .as_str()
+            .unwrap();
+        let batter = play.get("batter").unwrap();
+        let batter_id = batter.get("id")
+            .unwrap()
+            .as_str()
+            .unwrap();
+        let batter_name = batter.get("fullName")
+            .unwrap()
+            .as_str()
+            .unwrap();
+    }
+}
